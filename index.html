@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bingo </title>
+    <style>
+        body { background-color: #000; color: white; font-family: 'Arial', sans-serif; text-align: center; margin: 0; padding: 20px; overflow: hidden; }
+        #header { color: #0073CF; font-size: 2.5vw; margin-bottom: 10px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+
+        .main-container { display: flex; justify-content: space-around; align-items: center; height: 60vh; }
+
+        .box { background: #111; border: 4px solid #333; border-radius: 20px; padding: 20px; }
+        .current-box { width: 50%; border-color: #0073CF; box-shadow: 0 0 30px rgba(0,115,207,0.5); }
+        .prev-box { width: 25%; height: 40%; display: flex; flex-direction: column; justify-content: center; }
+
+        .label { font-size: 1.5vw; color: #888; text-transform: uppercase; letter-spacing: 2px; }
+        #currentNum { font-size: 15vw; font-weight: bold; margin: 0; line-height: 1; }
+        #prevNum { font-size: 5vw; color: #0073CF; margin: 0; }
+
+        #gameType { font-size: 3vw; color: #FFCC00; margin: 20px 0; font-weight: bold; }
+
+        #history { font-size: 1.2vw; color: #666; margin-top: 20px; word-wrap: break-word; padding: 0 50px; }
+
+        .controls { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: center; gap: 20px; }
+        button { padding: 15px 30px; font-size: 1.2vw; cursor: pointer; border-radius: 10px; border: none; background: #0073CF; color: white; font-weight: bold; }
+        button:hover { background: #00569b; }
+        .reset-btn { background: #444; }
+        select { padding: 10px; font-size: 1.2vw; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="header">BINGO</div>
+
+    <div id="gameType">GAME: <span id="gameDisplay">REGULAR 5-IN-A-ROW</span></div>
+
+    <div class="main-container">
+        <div class="box prev-box">
+            <div class="label">Previous</div>
+            <div id="prevNum">--</div>
+        </div>
+
+        <div class="box current-box">
+            <div class="label">Current Number</div>
+            <p id="currentNum">--</p>
+        </div>
+    </div>
+
+    <div id="history">Called: </div>
+
+    <div class="controls">
+        <select id="patternSelect" onchange="document.getElementById('gameDisplay').innerText = this.value">
+            <option value="REGULAR 5-IN-A-ROW">Regular 5-in-a-Row</option>
+            <option value="BLACKOUT (FULL BOARD)">Blackout</option>
+            <option value="X-SHAPE">X-Shape</option>
+            <option value="FOUR CORNERS">Four Corners</option>
+        </select>
+        <button onclick="callNumber()">CALL NEXT NUMBER</button>
+        <button class="reset-btn" onclick="resetGame()">RESET</button>
+    </div>
+
+    <script>
+        let numbers = Array.from({length: 75}, (_, i) => i + 1);
+        let called = [];
+
+        function getLetter(num) {
+            if (num <= 15) return "B";
+            if (num <= 30) return "I";
+            if (num <= 45) return "N";
+            if (num <= 60) return "G";
+            return "O";
+        }
+
+        function callNumber() {
+            if (numbers.length === 0) {
+                alert("All numbers called!");
+                return;
+            }
+
+            let current = document.getElementById('currentNum').innerText;
+            if (current !== "--") {
+                document.getElementById('prevNum').innerText = current;
+            }
+
+            let randomIndex = Math.floor(Math.random() * numbers.length);
+            let num = numbers.splice(randomIndex, 1)[0];
+            let letter = getLetter(num);
+            let fullCall = letter + "-" + num;
+
+            document.getElementById('currentNum').innerText = fullCall;
+            called.push(fullCall);
+            document.getElementById('history').innerText = "Called: " + called.join(", ");
+        }
+
+        function resetGame() {
+            if(confirm("Start a new game? This will clear all called numbers.")){
+                numbers = Array.from({length: 75}, (_, i) => i + 1);
+                called = [];
+                document.getElementById('currentNum').innerText = "--";
+                document.getElementById('prevNum').innerText = "--";
+                document.getElementById('history').innerText = "Called: ";
+            }
+        }
+    </script>
+</body>
+</html>
